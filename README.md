@@ -47,14 +47,14 @@ Ashoat's notes
    * SSH to your Beaglebone: `ssh debian@192.168.7.2`
    * `cd ~/LEDscape`
    * `chmod +x install-software.sh`
-	 * `./install-software.sh`
+   * `./install-software.sh`
    * Edit /etc/ledscape-config.json (`sudo vim /etc/ledscape-config.json`)
       * strip length is 214
       * number of strips is 40
       * make sure to disable interpolation and dithering
    * Edit /boot/uEnv.txt (`sudo vim /boot/uEnv.txt`)
       * Uncomment the line that disables just HDMI for kernel version 3.8 (*not* kernel version 4.x!)
-	 * `reboot`
+   * `reboot`
 
 Overview
 ========
