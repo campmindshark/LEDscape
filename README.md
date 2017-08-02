@@ -26,21 +26,19 @@ Ashoat's notes
       * SSH to your Beaglebone: `ssh debian@192.168.7.2`
          * `mkdir ~/bin`
          * Create the following file named `route_through_usb.sh` in `~/bin`:
-```bash
-#!/bin/sh
-sudo /sbin/route add default gw 192.168.7.1
-```
-
+             ```bash
+             #!/bin/sh
+             sudo /sbin/route add default gw 192.168.7.1
+             ```
          * `chmod +x ~/bin/route_through_usb.sh`
          * `route_through_usb.sh`
          * Update `/etc/resolv.conf` to look like this:
-```
-domain localdomain
-search localdomain
-nameserver 8.8.8.8
-namesever 8.8.4.4
-```
-
+             ```
+             domain localdomain
+             search localdomain
+             nameserver 8.8.8.8
+             namesever 8.8.4.4
+             ```
          * If everything is working correctly now, you should be able to clone the repo directly: `git clone https://github.com/campmindshark/LEDscape`
    * If you don't have a Windows computer or a way to connect your Beaglebone directly to the Internet, your best bet is to run `git clone` on your macOS or Linux machine, and then to SCP it over to the Beaglebone.
       * `git clone https://github.com/campmindshark/LEDscape`
