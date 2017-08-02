@@ -37,7 +37,7 @@ Ashoat's notes
              domain localdomain
              search localdomain
              nameserver 8.8.8.8
-             namesever 8.8.4.4
+             nameserver 8.8.4.4
              ```
          * If everything is working correctly now, you should be able to clone the repo directly: `git clone https://github.com/campmindshark/LEDscape`
    * If you don't have a Windows computer or a way to connect your Beaglebone directly to the Internet, your best bet is to run `git clone` on your macOS or Linux machine, and then to SCP it over to the Beaglebone.
