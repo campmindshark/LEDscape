@@ -1,3 +1,61 @@
+Ashoat's notes
+========
+1. First, we need to burn a Linux image onto a microSD card. Since LEDscape relies on the outdated `uio_pruss` kernel module, we need an old image. These directions should work on macOS.
+   * First, download the latest Debian 7 (Wheezy) image on [BeagleBoard.org/latest-images](https://beagleboard.org/latest-images). Here's a [direct link](https://debian.beagleboard.org/images/bone-debian-7.11-lxde-4gb-armhf-2016-06-15-4gb.img.xz).
+   * `gunzip bone-debian-7.11-lxde-4gb-armhf-2016-06-15-4gb.img.xz`
+   * Figure out which /dev/rdisk\* corresponds to your microSD card by comparing the results of `ls -hla /dev | grep rdisk` before and after plugging the microSD card into your laptop.
+   * With the microSD card in, run `sudo dd bs=1m if=bone-debian-7.11-lxde-4gb-armhf-2016-06-15-4gb.img of=/dev/rdisk2` (replacing rdisk2 with the result from the last step)
+   * Boot the Beaglebone with the new microSD in it while holding the BOOT button (the one next to the microSD slot) to make sure it boots from the microSD
+   * Resize the microSD card's main partition:
+      * SSH into the Beaglebone: `ssh debian@192.168.7.2`
+      * `fdisk /dev/mmcblk0`
+         * `p`
+         * If there are two partitions, then `d 2`
+         * If there is one partition, then `d 1`
+         * `n p 2` (or `n p 1` if only one partition)
+         * If there is only one partition, then `a 1`
+         * `w`
+         * Ctrl+D to leave
+      * `reboot`
+      * SSH in again
+      * `resize2fs /dev/mmcblk0p2` if there were two partitions
+      * `resize2fs /dev/mmcblk0p1` if there was one partition
+2. Next, we need to get LEDscape onto the image.
+   * If you have a Windows computer, you can [share your Internet connection](http://ofitselfso.com/BeagleNotes/HowToConnectBeagleboneBlackToTheInternetViaUSB.php) and run `git clone` directly on the Beaglebone.
+      * Follow the instructions to configure both network adapters on your Windows computer
+      * SSH to your Beaglebone: `ssh debian@192.168.7.2`
+         * `mkdir ~/bin`
+         * Create the following file named `route_through_usb.sh` in `~/bin`:
+```bash
+#!/bin/sh
+sudo /sbin/route add default gw 192.168.7.1
+```
+         * `chmod +x ~/bin/route_through_usb.sh`
+         * `route_through_usb.sh`
+         * Update `/etc/resolv.conf` to look like this:
+```
+domain localdomain
+search localdomain
+nameserver 8.8.8.8
+namesever 8.8.4.4
+```
+         * If everything is working correctly now, you should be able to clone the repo directly: `git clone https://github.com/campmindshark/LEDscape`
+   * If you don't have a Windows computer or a way to connect your Beaglebone directly to the Internet, your best bet is to run `git clone` on your macOS or Linux machine, and then to SCP it over to the Beaglebone.
+      * `git clone https://github.com/campmindshark/LEDscape`
+      * `scp LEDscape debian@192.168.7.2:`
+3. Now we simply need to install and configure LEDscape.
+   * SSH to your Beaglebone: `ssh debian@192.168.7.2`
+   * `cd ~/LEDscape`
+   * `chmod +x install-software.sh`
+	 * `./install-software.sh`
+   * Edit /etc/ledscape-config.json (`sudo vim /etc/ledscape-config.json`)
+      * strip length is 214
+      * number of strips is 40
+      * make sure to disable interpolation and dithering
+   * Edit /boot/uEnv.txt (`sudo vim /boot/uEnv.txt`)
+      * Uncomment the line that disables just HDMI for kernel version 3.8 (*not* kernel version 4.x!)
+	 * `reboot`
+
 Overview
 ========
 LEDscape is a library and service for controlling individually addressable LEDs from a 

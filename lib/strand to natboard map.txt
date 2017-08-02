@@ -1,0 +1,9 @@
+box	board	letter	beaglebone
+L	A	3	
+L	B	1
+L	C	5
+L	D       0	
+R	A
+R	B
+R	C
+R	D
