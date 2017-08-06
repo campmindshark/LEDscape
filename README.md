@@ -48,7 +48,7 @@ Ashoat's notes
             * `git clone https://github.com/campmindshark/LEDscape`
    * If you don't have a Windows computer or a way to connect your Beaglebone directly to the Internet, your best bet is to run `git clone` on your macOS or Linux machine, and then to SCP it over to the Beaglebone.
       * `git clone https://github.com/campmindshark/LEDscape`
-      * `scp LEDscape debian@192.168.7.2:`
+      * `scp -r LEDscape debian@192.168.7.2:`
 3. Now we simply need to install and configure LEDscape.
    * SSH to your Beaglebone: `ssh debian@192.168.7.2`
    * `cd ~/LEDscape`
