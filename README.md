@@ -1,60 +1,62 @@
 Ashoat's notes
 ========
-1. First, we need to burn a Linux image onto a microSD card. Since LEDscape relies on the outdated `uio_pruss` kernel module, we need an old image. These directions should work on macOS.
-   * First, download the latest Debian 7 (Wheezy) image on [BeagleBoard.org/latest-images](https://beagleboard.org/latest-images). Here's a [direct link](https://debian.beagleboard.org/images/bone-debian-7.11-lxde-4gb-armhf-2016-06-15-4gb.img.xz).
-   * `gunzip bone-debian-7.11-lxde-4gb-armhf-2016-06-15-4gb.img.xz`
-   * Figure out which /dev/rdisk\* corresponds to your microSD card by comparing the results of `ls -hla /dev | grep rdisk` before and after plugging the microSD card into your laptop.
-   * With the microSD card in, run `sudo dd bs=1m if=bone-debian-7.11-lxde-4gb-armhf-2016-06-15-4gb.img of=/dev/rdisk2` (replacing rdisk2 with the result from the last step)
-   * Boot the Beaglebone with the new microSD in it while holding the BOOT button (the one next to the microSD slot) to make sure it boots from the microSD
-   * Resize the microSD card's main partition:
+1. First, we need to burn a Linux image onto a microSD card. Since LEDscape relies on the outdated `uio_pruss` kernel module, we need an old image.
+   * We're going to start by burning a Linux image onto the microSD card. These directions should work on macOS.
+     * First, download the latest Debian 7 (Wheezy) image on [BeagleBoard.org/latest-images](https://beagleboard.org/latest-images). Here's a [direct link](https://debian.beagleboard.org/images/bone-debian-7.11-lxde-4gb-armhf-2016-06-15-4gb.img.xz).
+     * `gunzip bone-debian-7.11-lxde-4gb-armhf-2016-06-15-4gb.img.xz`
+     * Figure out which /dev/rdisk\* corresponds to your microSD card by comparing the results of `ls -hla /dev | grep rdisk` before and after plugging the microSD card into your laptop.
+     * If it's a new microSD card, it will get mounted, which will prevent the next step from working. Run `diskutil unmount /dev/disk2s1`, replacing 'disk2s1' in the last step with the results from the last step. Note there is no "r" at the start, but there is an "s1" at the end
+     * With the microSD card in, run `sudo dd bs=1m if=bone-debian-7.11-lxde-4gb-armhf-2016-06-15-4gb.img of=/dev/rdisk2`, replacing rdisk2 with the result from the step before last. Note there is no "s1" at the end, but there is an "r" at the start
+   * Next, we need to resize the partitions in the partition table and the filesystems contained therein.
+     * Put the new microSD in your Beaglebone, hold the BOOT button (the one next to the microSD slot), and then connect the Beaglebone to your computer via USB to power it on.
       * SSH into the Beaglebone: `ssh debian@192.168.7.2`
-      * `fdisk /dev/mmcblk0`
+      * `sudo fdisk /dev/mmcblk0`
          * `p`
-         * If there are two partitions, then `d 2`
-         * If there is one partition, then `d 1`
-         * `n p 2` (or `n p 1` if only one partition)
-         * If there is only one partition, then `a 1`
+         * If there are two partitions, then
+            * `d 2`
+            * `n`, `p`, `2`, Enter, Enter
+         * If there is only one partition, then
+            * `d 1`
+            * `n`, `p`, `1`, Enter, Enter
+            * `a`, `1`
          * `w`
-         * Ctrl+D to leave
-      * `reboot`
+         * If it doesn't crash and exit automatically, then Ctrl+D to leave
+      * `sudo reboot`
       * SSH in again
-      * `resize2fs /dev/mmcblk0p2` if there were two partitions
-      * `resize2fs /dev/mmcblk0p1` if there was one partition
+      * `sudo resize2fs /dev/mmcblk0p2` if there were two partitions
+      * `sudo resize2fs /dev/mmcblk0p1` if there was one partition
 2. Next, we need to get LEDscape onto the image.
    * If you have a Windows computer, you can [share your Internet connection](http://ofitselfso.com/BeagleNotes/HowToConnectBeagleboneBlackToTheInternetViaUSB.php) and run `git clone` directly on the Beaglebone.
-      * Follow the instructions to configure both network adapters on your Windows computer
-      * SSH to your Beaglebone: `ssh debian@192.168.7.2`
-         * `mkdir ~/bin`
-         * Create the following file named `route_through_usb.sh` in `~/bin`:
+      * Follow the instructions to first install drivers, and then configure both network adapters on your Windows computer
+      * SSH to your Beaglebone using Putty or something
+         * Create the following file named `route_through_usb.sh` in `~/bin` (ie. `vim ~/bin/route_through_usb.sh`):
              ```bash
              #!/bin/sh
              sudo /sbin/route add default gw 192.168.7.1
              ```
          * `chmod +x ~/bin/route_through_usb.sh`
          * `route_through_usb.sh`
-         * Update `/etc/resolv.conf` to look like this:
+         * Update `/etc/resolv.conf` to look like this (ie. `sudo vim /etc/resolv.conf`):
              ```
              domain localdomain
              search localdomain
              nameserver 8.8.8.8
              nameserver 8.8.4.4
              ```
-         * If everything is working correctly now, you should be able to clone the repo directly: `git clone https://github.com/campmindshark/LEDscape`
+         * If everything is working correctly now, you should be able to clone the repo directly
+            * `cd`
+            * `git clone https://github.com/campmindshark/LEDscape`
    * If you don't have a Windows computer or a way to connect your Beaglebone directly to the Internet, your best bet is to run `git clone` on your macOS or Linux machine, and then to SCP it over to the Beaglebone.
       * `git clone https://github.com/campmindshark/LEDscape`
       * `scp LEDscape debian@192.168.7.2:`
 3. Now we simply need to install and configure LEDscape.
    * SSH to your Beaglebone: `ssh debian@192.168.7.2`
    * `cd ~/LEDscape`
-   * `chmod +x install-software.sh`
-   * `./install-software.sh`
-   * Edit /etc/ledscape-config.json (`sudo vim /etc/ledscape-config.json`)
-      * strip length is 214
-      * number of strips is 40
-      * make sure to disable interpolation and dithering
-   * Edit /boot/uEnv.txt (`sudo vim /boot/uEnv.txt`)
-      * Uncomment the line that disables just HDMI for kernel version 3.8 (*not* kernel version 4.x!)
-   * `reboot`
+   * `sudo ./install-software.sh`
+   * `sudo cp ledscape-config.json /etc/`
+   * `sudo cp uEnv.txt /boot/`
+   * `sudo reboot`
+   * Now we should be able to run LEDscape: `sudo ./run-ledscape`
 
 Overview
 ========
@@ -85,7 +87,7 @@ Examples on how to do this can be found at [BeagleBoard.org](http://beagleboard.
 
 To use LEDscape, you must use a version of the Linux kernel that supports the `uio_pruss` module. The Beaglebone.org Wheezy Linux images work well. 
 
-####Checking existing Linux version
+#### Checking existing Linux version
 
 Check which Debian version you are currently running by entering...
 
@@ -95,7 +97,7 @@ cat /etc/debian_version
 
 This `README` was tested with version `7.11`, but any 7.x version should work. Version 8.x is currently not compatible because it does not support the PRUSS subsystem that LEDScape used to talk to the PRU units. 
 
-####Installing a compatible Linux version
+#### Installing a compatible Linux version
 
 If you have an incompatible version currently installed or just want to start with a clean install of to the most recent compatible version, you can follow the instructions here under "Update board with latest software"...
 
@@ -103,7 +105,7 @@ http://beagleboard.org/getting-started
 
 Make sure you pick a "Wheezy" version of the Linux kernel since the "Jessie" versions do not yet work by default. This readme was tested against the "Debian 7.11 2015-06-15 4GB SD LXDE" image. 
 
-###Installing the LEDscape software
+### Installing the LEDscape software
 
 Log into a compatible Linux version as root and enter the following commands at a command line...
 
@@ -131,7 +133,7 @@ You should be able to update an existing install with the above procedure withou
 
 Note that the install process will not preserve any modified pin mappings.
  
-###Testing the install
+### Testing the install
 
 Once the machine has rebooted, log in as root, enter the following commands to switch into the `LEDscape` directory you created above and manually start the LEDscape server...
 
@@ -143,7 +145,7 @@ cd LEDscape
 It should print some diagnostic messages and continue running until you press Control-C or logout or reboot. 
 
 By default, the server starts sending a demo pattern in the WS2812B format on the output pins. If you connect the `DI` of some strings to these pins, they should light up.  Pins P8-8, P8-10, P8-12, P8-14, P8-16, and P8-18 are great for testing since they are located near a ground on pin P8-2, they are all right next to each other, and they should always have pixel data in the default configuration. 
-###Setting the server to run automatically as a service
+### Setting the server to run automatically as a service
 
 If you want LEDscape to automatically start every time the machine is rebooted, you can install it as a service with the following command (run from a command line inside the LEDscape directory as root)...
 
@@ -153,14 +155,14 @@ If you want LEDscape to automatically start every time the machine is rebooted, 
 Open Pixel Control Server
 =========================
 
-##Configuration
+## Configuration
 	
 By default LEDscape is configured for strings of 256 WS2811 pixels, accepting OPC
 data on port 7890. You can adjust this by editing `run-ledscape` and 
 editing the parameters to `opc-server`
 
 
-##Data Format
+## Data Format
 
 The `opc-server` server accepts data on OPC channel 0. It expects the data for
 each LED strip concatenated together. This is done because LEDscape requires
@@ -173,7 +175,7 @@ with `--udp-port <port>`. Entering `0` for a port number will disable that serve
 Note that if using the UDP server, `opc-server` will limit the number of pixels to 21835, or 454 pixels per port if
 using all 48 ports.
 
-##Output Modes
+## Output Modes
 
 LEDscape is capable of outputting several types of signal. By default, a ws2811-compatible signal is generated. The
 output mode can be specified with the `--mode <mode-id>` parameter. A list of available modes and their descriptions
@@ -199,7 +201,7 @@ A human-readable pinout for a mapping can be generated by running
 
     node pru/pinmap.js --mapping <mapping-id>
     
-###Default pin mappings
+### Default pin mappings
 
 By default, LEDscape is set up to drive 48 strings of WS2812B LEDs, with each string having up to 600 pixels. You can connect shorter strings with no problems except that the update rate will be slower. If you connect longer strings, only the first 600 pixels will update. 
 
@@ -293,13 +295,13 @@ Configuration
 
 Config info is typically stored in `/etc/ledscape-config.json`.
 
-##Default config
+## Default config
 
 The default config after installation is set up to drive WS281X strips connected to all of the 48 available output pins. Note that not all pins will work on BeagleBone Black unless you [disable the HDMI port](#HDMI Conflict).  
 
 A description of the file format and some example configurations are available in the [`configs/` subdirectory](/configs) of this repo. 
 
-##Directly editing the current config
+## Directly editing the current config
 
 You can edit the config file directly by typing...
 
