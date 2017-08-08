@@ -125,7 +125,7 @@ This will do the following....
 4. Install the `uio_pruss` kernel module to let LEDscape talk to the PRU subsystem. 
 5. Reboot the machine.
 
-###Updating an existing install
+### Updating an existing install
 
 If you are using an older version of LEDscape that keeps the configuration in a JSON file inside the LEDscape directory, you should copy your modified config to `/etc/ledscape-config.json`.  
 
