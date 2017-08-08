@@ -83,7 +83,7 @@ It is necessary to have access to a shell onto the Beaglebone using serial, Ethe
 Examples on how to do this can be found at [BeagleBoard.org](http://beagleboard.org/getting-started) or at
 [Adafruit's Learning Site](https://learn.adafruit.com/ssh-to-beaglebone-black-over-usb/ssh-on-mac-and-linux).
 
-###Start with a compatible Linux image
+### Start with a compatible Linux image
 
 To use LEDscape, you must use a version of the Linux kernel that supports the `uio_pruss` module. The Beaglebone.org Wheezy Linux images work well. 
 
@@ -216,7 +216,7 @@ Here are the default pin assignments for the first 6 channels so you can get you
 
 These are the pins you would connect the to each string's `DI` (Data In).
 
-###HDMI conflict
+### HDMI conflict
 
 #### BeagleBone Green
 The BeagleBone Green has no HDMI port, so all 48 channels are available on the mapped pins by default. 
