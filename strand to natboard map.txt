@@ -1,9 +1,24 @@
-box	board	letter	beaglebone
-L	A	3	
-L	B	1
-L	C	5
-L	D       0	
-R	A
-R	B
-R	C
-R	D
+Imagine you're facing a control box from outside the dome.
+The first six strands are identified as follows:
+
+B  \   /  C
+A -- x -- D
+F  /   \  E
+
+G is the extension strand that goes over A, and
+H is the extension strand that goes over C.
+
+The rx Natboard on the left in the control box handles strands
+1-4 from left to right, and the Natboard on the right handles
+strands 5-8 from left to right.
+
+The mapping between strands and the Natboard slots is as follows:
+Natboard slot   Strand
+1               E
+2               B
+3               H
+4               D
+5               C
+6               A
+7               F
+8               G
