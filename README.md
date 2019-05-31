@@ -29,6 +29,12 @@ Ashoat's notes
    * If you have a Windows computer, you can [share your Internet connection](http://ofitselfso.com/BeagleNotes/HowToConnectBeagleboneBlackToTheInternetViaUSB.php) and run `git clone` directly on the Beaglebone.
       * Follow the instructions to first install drivers, and then configure both network adapters on your Windows computer
       * SSH to your Beaglebone using Putty or something
+         * `vim ~/.bash_profile`:
+             ```bash
+             export GIT_SSL_NO_VERIFY=1
+             export PATH=$PATH:~/bin
+             ```
+         * `. ~/.bash_profile`
          * Create the following file named `route_through_usb.sh` in `~/bin` (ie. `vim ~/bin/route_through_usb.sh`):
              ```bash
              #!/bin/sh
