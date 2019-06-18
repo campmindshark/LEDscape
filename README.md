@@ -58,7 +58,7 @@ Ashoat's notes
 3. Now we simply need to install and configure LEDscape.
    * SSH to your Beaglebone: `ssh debian@192.168.7.2`
    * `cd ~/LEDscape`
-   * `sudo ./install-software.sh`
+   * `sudo ./install-service.sh`
    * `sudo cp ledscape-config.json /etc/`
    * `sudo cp uEnv.txt /boot/`
    * `sudo reboot`
