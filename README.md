@@ -64,6 +64,14 @@ Ashoat's notes
    * `sudo reboot`
    * Now we should be able to run LEDscape: `sudo ./run-ledscape`
 
+Mindshark yearly updates
+========
+
+2019
+------
+We encountered the [change-to-frame-reset-time issue](https://blog.adafruit.com/2017/05/03/psa-the-ws2812b-rgb-led-has-been-revised-will-require-code-tweak/) this year. Yona showed up and saved our asses by updating the `SLEEPNS` directive in `pru/templates/ws281x.p`. We noticed the number he picked is lower than what got [merged upstream](https://github.com/Yona-Appletree/LEDscape/commit/b6439f8b2d6e1983d1c6053adf9b08b7dbca886b), so if you ever notice weird flickering frames, it may be worth trying to push this number higher, maybe from 200usec to 300usec.
+
+
 Overview
 ========
 LEDscape is a library and service for controlling individually addressable LEDs from a 
